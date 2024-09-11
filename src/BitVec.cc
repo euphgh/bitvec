@@ -32,7 +32,7 @@ BitVec BitVec::create(word_t value, width_t width) {
   // set len
   width_t len = width == 0 ? min_len(value) : width;
 
-  BitVec ret = BitVec(len, data);
+  BitVec ret = BitVec(len, std::move(data));
   // remove redundent arr by width
   ret.data_resize();
   return ret;
