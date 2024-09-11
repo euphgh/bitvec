@@ -11,7 +11,7 @@ find_package(fmt)
 ##############################################
 # Create target and set properties
 
-add_library(bitvec
+add_library(bitvec SHARED
     src/BitVec.cc
     src/debug.cc
     src/changable.cc
