@@ -1,19 +1,17 @@
 #include "bitvec/debug.h"
 #include "bitvec/core.h"
-#include "bitvec/type.h"
 #include "bitvec/utils.h"
 
-using namespace bv;
-
-void error_impl(const char *msg) {
+void bv::error_impl(const char *msg) {
   std::fputs(msg, stderr);
   std::putc('\n', stderr);
   std::fflush(stderr);
   exit(-1);
 }
 
+using namespace bv;
 // TODO: not support big end
-inline std::string to_string_impl(uint8_t *arr, width_t width, mark_t mark) {
+std::string to_string_impl(uint8_t *arr, width_t width, mark_t mark) {
   auto res = std::stringstream();
   auto nbytes = width / 8;
   if (width % 8) {
