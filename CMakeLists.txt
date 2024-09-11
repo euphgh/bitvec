@@ -95,6 +95,9 @@ export(EXPORT bitvec-targets
 #Register package in the User Package Registry
 export(PACKAGE BitVec)
 
+add_executable(bitvec_example src/example.cc)
+target_link_libraries(bitvec_example bitvec)
+
 ##############################################
 # Add test
 enable_testing()
