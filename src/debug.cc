@@ -14,6 +14,8 @@ void error_impl(const char *msg) {
   exit(-1);
 }
 
+namespace {
+
 char hex_char(size_t data) {
   if (data < 10) {
     auto res = (data & 0xf) + '0';
@@ -30,21 +32,20 @@ char hex_char(size_t data) {
 
 using mark_t = enum { hex, bin, otx };
 
-std::string unit_string(unit_t data, mark_t mark) {
+std::string byte_string(uint8_t data, mark_t mark) {
   std::string res;
   switch (mark) {
   case hex:
-    res = fmt::format("{:h}", data);
+    return fmt::format("{:02x}", data);
   case bin:
-    res = fmt::format("{:b}", data);
-  case otx:
-    res = fmt::format("{:l}", data);
+    return fmt::format("{:08b}", data);
+  default:
+    require(false, "not expect exec to here");
   }
-  return res;
 }
 
 // from 0 to len - 1
-std::string bits_string(unit_t data, width_t len, mark_t mark) {
+std::string bits_string(uint8_t data, width_t len, mark_t mark) {
   auto res = std::stringstream();
   if (mark == hex) {
     auto buf = std::stack<uint8_t>();
@@ -79,27 +80,30 @@ std::string bits_string(unit_t data, width_t len, mark_t mark) {
   require(false, "fail to bits_string with not support format");
 }
 
+// TODO: not support big end
+std::string to_string_impl(uint8_t *arr, width_t width, mark_t mark) {
+  auto res = std::stringstream();
+  auto nbytes = width / 8;
+  if (width % 8) {
+    res << bits_string(arr[nbytes], width % 8, mark);
+  }
+  for (size_t i = 1; i <= nbytes; i++) {
+    res << byte_string(arr[nbytes - i], mark);
+  }
+  return res.str();
+}
+
+}; // namespace
+
 std::string BitVec::to_string(const std::string &format) const {
   require(format.length() > 0, " format is empty");
   auto res = std::stringstream();
   switch (format[0]) {
   case 'h': {
-    res << bits_string(data[data_size() - 1], width() % ubits, hex);
-    if (data_size() > 1) {
-      for (size_t i = data_size() - 2; i >= 0; i--) {
-        res << unit_string(data[i], hex);
-      }
-    }
-    return res.str();
+    return to_string_impl((uint8_t *)data.data(), width(), hex);
   }
   case 'b': {
-    res << bits_string(data[data_size() - 1], width() % ubits, bin);
-    if (data_size() > 1) {
-      for (size_t i = data_size() - 2; i >= 0; i--) {
-        res << unit_string(data[i], bin);
-      }
-    }
-    return res.str();
+    return to_string_impl((uint8_t *)data.data(), width(), bin);
   }
   case 'o': {
     return std::to_string(get());
