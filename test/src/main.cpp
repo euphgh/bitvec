@@ -2,9 +2,9 @@
 #include <gtest/gtest.h>
 
 TEST(BitVecTest, create) {
-  auto foo = BitVec::create(12, 32);
+  auto foo = bv::BitVec(12, 32);
   EXPECT_EQ(foo.to_string(), "c") << "fail" ;
-  auto bar = BitVec::create(12, 32);
+  auto bar = bv::BitVec(12, 32);
 }
 
 TEST(BitVecTest, changable) {}

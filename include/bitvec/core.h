@@ -1,9 +1,11 @@
 #ifndef __BITVEC_CORE_H__
 #define __BITVEC_CORE_H__
 
-#include "type.h"
+#include "bitvec/type.h"
 #include <functional>
 #include <string>
+
+namespace bv {
 
 class BitVec {
   stdvec data = stdvec();
@@ -11,7 +13,6 @@ class BitVec {
   // remove redundent element
   void data_resize() { data.resize((width() - 1) / (sizeof(unit_t))); }
   BitVec(width_t width, stdvec mem) : data(std::move(mem)), len(width) {}
-  BitVec(width_t width) : len(width) {}
 
 public:
   [[nodiscard]] std::string to_string(const std::string &format = "h") const;
@@ -19,8 +20,8 @@ public:
   // BitVec(word_t value, width_t width = 0);
   // BitVec(const std::string &value, width_t width = 0);
   // if width == 0, width will be minimal of value, if value == 0, width = 1
-  static BitVec create(word_t value, width_t width = 0);
-  static BitVec create(const std::string &value, width_t width = 0);
+  BitVec(word_t value, width_t width = 0);
+  BitVec(const std::string &value, width_t width = 0);
   [[nodiscard]] bool operator[](width_t pos) const;
   [[nodiscard]] bool operator==(const BitVec &rhs) const;
   [[nodiscard]] bool operator!=(const BitVec &rhs) const;
@@ -78,4 +79,5 @@ struct DecoupledIO {
     cb(ready);
   }
 };
+};     // namespace bv
 #endif // __BITVEC_CORE_H__

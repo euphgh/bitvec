@@ -2,25 +2,20 @@
 #define __BITVEC_TYPE_H__
 #include <cstddef>
 #include <cstdint>
+#include <fmt/core.h>
 #include <vector>
 
-#ifndef word_t
+namespace bv {
+
+// configure when compile
 using word_t = size_t;
-#endif // word_t
-#ifndef width_t
 using width_t = size_t;
-#endif // width_t
-#ifndef unit_t
 using unit_t = uint8_t;
-#endif // unit_t
 
 #define ubits (sizeof(unit_t) * 8)
 #define BASE_SIZE (sizeof(word_t) / sizeof(unit_t))
 #define HALF_OF(type) (((type)1L) << ((sizeof(type) * 8) - 1))
 
-
-#ifndef stdvec
-#include <fmt/core.h>
 template <typename T> class MyVector : public std::vector<T> {
 public:
   MyVector &operator=(const MyVector &that) {
@@ -47,6 +42,7 @@ public:
   }
 };
 using stdvec = MyVector<unit_t>;
-#endif
+
+}; // namespace bv
 
 #endif // __BITVEC_TYPE_H__

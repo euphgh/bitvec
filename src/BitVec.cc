@@ -1,41 +1,19 @@
 #include "bitvec/core.h"
+#include "bitvec/utils.h"
 #include <algorithm>
+#include <vector>
 
-template <typename data_t> size_t first_one_pos(data_t x) {
-  size_t res = sizeof(data_t) * 8;
-  while (x < HALF_OF(data_t)) {
-    res--;
-    x <<= 1;
-  }
-  return res;
-}
+using namespace bv;
 
-// find the minimal len for a value
-size_t min_len(word_t x) {
-  auto *arr = (uint8_t *)&x;
-  size_t res = sizeof(word_t) * 8;
-  for (auto i = (sizeof(x) / sizeof(uint8_t)); i > 0; i--) {
-    auto byte = arr[i - 1];
-    if (byte) {
-      res -= first_one_pos<uint8_t>(byte);
-      break;
-    }
-    res -= sizeof(uint8_t) * 8;
-  }
-  return res == 0 ? 1 : res;
-}
-
-BitVec BitVec::create(word_t value, width_t width) {
-  auto data = stdvec(BASE_SIZE);
+BitVec::BitVec(word_t value, width_t width) {
+  data = stdvec(BASE_SIZE);
   // alloc space and assign
   *((word_t *)data.data()) = value;
   // set len
-  width_t len = width == 0 ? min_len(value) : width;
+  len = width == 0 ? min_len(value) : width;
 
-  BitVec ret = BitVec(len, std::move(data));
   // remove redundent arr by width
-  ret.data_resize();
-  return ret;
+  data_resize();
 }
 
 bool BitVec::operator[](width_t pos) const {
@@ -94,5 +72,5 @@ FOREACH_OP(COMP_IMPL)
 
 [[nodiscard]] BitVec BitVec::slice(width_t msb, width_t lsb) const {
   RIGHT_SHIFT(mem, >>, lsb);
-  return { msb - lsb + 1, mem };
+  return {msb - lsb + 1, mem};
 }
