@@ -24,26 +24,26 @@ using unit_t = uint8_t;
 template <typename T> class MyVector : public std::vector<T> {
 public:
   MyVector &operator=(const MyVector &that) {
-    fmt::println("call MyVector assign const&");
+    fmt::print("call MyVector assign const&\n");
     std::vector<T>::operator=(that);
     return *this;
   }
   MyVector &operator=(MyVector &&that) noexcept {
-    fmt::println("call MyVector assign &&");
+    fmt::print("call MyVector assign &&\n");
     std::vector<T>::operator=(std::move(that));
     return *this;
   };
   MyVector(const MyVector &that) : std::vector<T>(that) {
-    fmt::println("call MyVector copy construct of const&");
+    fmt::print("call MyVector copy construct of const&\n");
   }
   MyVector(MyVector &&that) noexcept : std::vector<T>(std::move(that)) {
-    fmt::println("call MyVector copy construct of &&");
+    fmt::print("call MyVector copy construct of &&\n");
   };
   MyVector() : std::vector<T>() {
-    fmt::println("call MyVector empty construct");
+    fmt::print("call MyVector empty construct\n");
   }
   MyVector(size_t n) : std::vector<T>(n) {
-    fmt::println("call MyVector args construct with {}", n);
+    fmt::print("call MyVector args construct with {}\n", n);
   }
 };
 using stdvec = MyVector<unit_t>;
