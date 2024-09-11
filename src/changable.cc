@@ -22,8 +22,6 @@ void BitVec::sign_extend(width_t start) { EXTEND_IMPL(start, (*this)[start]); }
 void BitVec::zero_extend(width_t start) { EXTEND_IMPL(start, 0); }
 
 void BitVec::resize(width_t width) {
-
-  require(false, "hello");
   if (width == len)
     return;
 
