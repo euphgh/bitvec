@@ -85,11 +85,11 @@ template <typename data_t> size_t count_lead_zero(data_t x) {
 // find the minimal len for a value
 inline size_t min_len(word_t x) {
   auto *arr = (uint8_t *)&x;
-  size_t res = sizeof(word_t) * 8;
+  auto res = sizeof(word_t) * 8;
   for (auto i = (sizeof(x) / sizeof(uint8_t)); i > 0; i--) {
     auto byte = arr[i - 1];
     if (byte) {
-      res -= first_one_pos<uint8_t>(byte);
+      res -= count_lead_zero<uint8_t>(byte);
       break;
     }
     res -= sizeof(uint8_t) * 8;
