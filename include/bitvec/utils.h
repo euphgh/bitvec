@@ -51,8 +51,8 @@ inline std::string bits_string(uint8_t data, width_t len, mark_t mark) {
       for (size_t i = len % 4; i < 4; i++) {
         res << "x";
       }
-      for (size_t i = len % 4 - 1; i >= 0; i--) {
-        res << (char)(((data >> i) & 0x1) + '0');
+      for (size_t i = len % 4; i > 0; i--) {
+        res << (char)(((data >> (i - 1)) & 0x1) + '0');
       }
       res << ")";
     }
@@ -72,10 +72,11 @@ inline std::string bits_string(uint8_t data, width_t len, mark_t mark) {
   require(false, "fail to bits_string with not support format");
 }
 
-template <typename data_t> size_t first_one_pos(data_t x) {
-  size_t res = sizeof(data_t) * 8;
+// count zero before first one
+template <typename data_t> size_t count_lead_zero(data_t x) {
+  size_t res = 0;
   while (x < HALF_OF(data_t)) {
-    res--;
+    res++;
     x <<= 1;
   }
   return res;
