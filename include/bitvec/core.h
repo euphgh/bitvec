@@ -13,6 +13,7 @@ class BitVec {
   // remove redundent element
   void data_resize() { data.resize((width() - 1) / (sizeof(unit_t))); }
   BitVec(width_t width, stdvec mem) : data(std::move(mem)), len(width) {}
+  [[nodiscard]] inline width_t data_size() const { return data.size(); }
 
 public:
   [[nodiscard]] std::string to_string(const std::string &format = "h") const;
@@ -20,7 +21,7 @@ public:
   // BitVec(word_t value, width_t width = 0);
   // BitVec(const std::string &value, width_t width = 0);
   // if width == 0, width will be minimal of value, if value == 0, width = 1
-  BitVec(word_t value, width_t width = 0);
+  BitVec(word_t value = 0, width_t width = 0);
   BitVec(const std::string &value, width_t width = 0);
   [[nodiscard]] bool operator[](width_t pos) const;
   [[nodiscard]] bool operator==(const BitVec &rhs) const;
@@ -34,7 +35,6 @@ public:
   [[nodiscard]] BitVec operator>>(width_t pos) const;
   [[nodiscard]] BitVec slice(width_t msb, width_t lsb) const;
   [[nodiscard]] inline width_t width() const { return len; }
-  [[nodiscard]] inline width_t data_size() const { return data.size(); }
   // change
   void sign_extend(width_t start);
   void zero_extend(width_t start);
