@@ -1,7 +1,9 @@
 #ifndef __BITVEC_CORE_H__
 #define __BITVEC_CORE_H__
 
+#include "bitvec/debug.h"
 #include "bitvec/type.h"
+#include "fmt/ranges.h"
 #include <functional>
 #include <string>
 
@@ -14,6 +16,9 @@ class BitVec {
   void data_resize() { data.resize((width() - 1) / (sizeof(unit_t))); }
   BitVec(width_t width, stdvec mem) : data(std::move(mem)), len(width) {}
   [[nodiscard]] inline width_t data_size() const { return data.size(); }
+  [[nodiscard]] std::string data_check() const {
+    return fmt::format("{:02x}", fmt::join(data, ", "));
+  }
 
 public:
   [[nodiscard]] std::string to_string(const std::string &format = "h") const;
