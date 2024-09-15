@@ -61,7 +61,7 @@ public:
   }
 };
 
-TEST_F(BitVecOp, helloTest) {
+TEST_F(BitVecOp, lessTest) {
   set_value(0b101110111, 0b101110110);
   EXPECT_EQ(rand0 < rand1, dut0 < dut1);
   set_value(0b111110111, 0b011110111);
@@ -69,8 +69,29 @@ TEST_F(BitVecOp, helloTest) {
   for (size_t i = 0; i < 10000; i++) {
     rand_init();
     EXPECT_EQ(rand0 < rand1, dut0 < dut1)
-        << fmt::format("test[{}] fail: {:b}({:o}) {} {:b}({:o})", i, rand0,
-                       rand0, (rand0 < rand1 ? "<" : ">="), rand1, rand1);
+        << fmt::format("test {}: {} < {}", i, rand0, rand1);
+  }
+}
+
+TEST_F(BitVecOp, greatTest) {
+  for (size_t i = 0; i < 10000; i++) {
+    rand_init();
+    EXPECT_EQ(rand0 > rand1, dut0 > dut1)
+        << fmt::format("test {}: {} > {}", i, rand0, rand1);
+    ;
+  }
+}
+
+TEST_F(BitVecOp, equalTest) {
+  for (size_t i = 0; i < 10000; i++) {
+    rand_init();
+    if (rand0 % 2 == 0) {
+      set_value(rand0, rand0);
+    }
+    EXPECT_EQ(rand0 == rand1, dut0 == dut1)
+        << fmt::format("test {}: {:x} == {:x}", i, rand0, rand1);
+    ;
+    ;
   }
 }
 

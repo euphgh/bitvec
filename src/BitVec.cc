@@ -1,7 +1,5 @@
 #include "bitvec/core.h"
 #include "bitvec/utils.h"
-#include <algorithm>
-#include <vector>
 
 using namespace bv;
 
@@ -20,64 +18,49 @@ bool BitVec::operator[](width_t pos) const {
   return (data[pos / sizeof(unit_t)] >> pos % sizeof(unit_t)) & 0x1;
 }
 
-#define COMP_IMPL(op)                                                          \
-  bool BitVec::operator op(const BitVec & rhs) const {                         \
-    auto min_size = std::min(data_size(), rhs.data_size());                    \
-    return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t))     \
-        op 0;                                                                  \
-  }
+#define BITVEC_COMPARE_TEMPLATE(ret)                                           \
+  do {                                                                         \
+    size_t max_size = data_size();                                             \
+    size_t min_size = rhs.data_size();                                         \
+    if (data_size() < rhs.data_size()) {                                       \
+      max_size = rhs.data_size();                                              \
+      min_size = data_size();                                                  \
+    }                                                                          \
+    for (size_t i = max_size; i > min_size; i--) {                             \
+      auto l = 0;                                                              \
+      auto r = 0;                                                              \
+      if (i <= data_size()) {                                                  \
+        l = data[i - 1];                                                       \
+      }                                                                        \
+      if (i <= rhs.data_size()) {                                              \
+        r = rhs.data[i - 1];                                                   \
+      }                                                                        \
+      if (l != r) {                                                            \
+        return (ret);                                                          \
+      }                                                                        \
+    }                                                                          \
+    for (size_t i = min_size; i > 0; i--) {                                    \
+      const auto l = data[i - 1];                                              \
+      const auto r = rhs.data[i - 1];                                          \
+      if (l != r) {                                                            \
+        return (ret);                                                          \
+      }                                                                        \
+    }                                                                          \
+    return false;                                                              \
+  } while (0)
 
-#define FOREACH_OP(_) _(==) _(!=) _(>) _(<) _(>=) _(<=)
-bool BitVec ::operator==(const BitVec &rhs) const {
-  auto min_size = std ::min(data_size(), rhs.data_size());
-  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) == 0;
+bool BitVec::operator!=(const BitVec &rhs) const {
+  BITVEC_COMPARE_TEMPLATE(true);
 }
-bool BitVec ::operator!=(const BitVec &rhs) const {
-  auto min_size = std ::min(data_size(), rhs.data_size());
-  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) != 0;
+bool BitVec::operator<(const BitVec &rhs) const {
+  BITVEC_COMPARE_TEMPLATE(l < r);
 }
-bool BitVec ::operator>(const BitVec &rhs) const {
-  auto min_size = std ::min(data_size(), rhs.data_size());
-  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) > 0;
+bool BitVec::operator>(const BitVec &rhs) const {
+  BITVEC_COMPARE_TEMPLATE(l > r);
 }
-bool BitVec ::operator<(const BitVec &rhs) const {
-  BV_INFO("call bitvec {} < {}", to_string(), rhs.to_string());
-  BV_INFO("lhs.data_size = {}, rhs.data_size = {}", data_size(),
-          rhs.data_size());
-  BV_INFO("lhs.check_data = {}, rhs.check_data = {}", data_check(),
-          rhs.data_check());
-  BV_INFO("lhs.width = {}, rhs.width = {}", width(), rhs.width());
-  auto min_size = std ::min(data_size(), rhs.data_size());
-  // from msb to lsb
-  if (rhs.data_size() > min_size) {
-    for (size_t i = rhs.data_size(); i > min_size; i--) {
-      if (rhs.data[i - 1] != 0)
-        return true;
-    }
-  } else if (data_size() > min_size) {
-    for (size_t i = data_size(); i > min_size; i--) {
-      if (data[i - 1] != 0)
-        return false;
-    }
-  } else {
-    for (size_t i = min_size; i > 0; i--) {
-      if (data[i - 1] != rhs.data[i - 1]) {
-        return data[i - 1] < rhs.data[i - 1];
-      }
-    }
-  }
-  return false;
-}
-bool BitVec ::operator>=(const BitVec &rhs) const {
-  auto min_size = std ::min(data_size(), rhs.data_size());
-  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) >= 0;
-}
-bool BitVec ::operator<=(const BitVec &rhs) const {
-  auto min_size = std ::min(data_size(), rhs.data_size());
-  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) <= 0;
-}
-#undef FOREACH_OP
-#undef COMP_IMPL
+bool BitVec::operator>=(const BitVec &rhs) const { return !(*this < rhs); }
+bool BitVec::operator<=(const BitVec &rhs) const { return !(*this > rhs); }
+bool BitVec::operator==(const BitVec &rhs) const { return !(*this != rhs); }
 
 #define RIGHT_SHIFT(name, op, pos)                                             \
   auto name = stdvec(data_size());                                             \
