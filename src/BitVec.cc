@@ -28,7 +28,54 @@ bool BitVec::operator[](width_t pos) const {
   }
 
 #define FOREACH_OP(_) _(==) _(!=) _(>) _(<) _(>=) _(<=)
-FOREACH_OP(COMP_IMPL)
+bool BitVec ::operator==(const BitVec &rhs) const {
+  auto min_size = std ::min(data_size(), rhs.data_size());
+  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) == 0;
+}
+bool BitVec ::operator!=(const BitVec &rhs) const {
+  auto min_size = std ::min(data_size(), rhs.data_size());
+  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) != 0;
+}
+bool BitVec ::operator>(const BitVec &rhs) const {
+  auto min_size = std ::min(data_size(), rhs.data_size());
+  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) > 0;
+}
+bool BitVec ::operator<(const BitVec &rhs) const {
+  BV_INFO("call bitvec {} < {}", to_string(), rhs.to_string());
+  BV_INFO("lhs.data_size = {}, rhs.data_size = {}", data_size(),
+          rhs.data_size());
+  BV_INFO("lhs.check_data = {}, rhs.check_data = {}", data_check(),
+          rhs.data_check());
+  BV_INFO("lhs.width = {}, rhs.width = {}", width(), rhs.width());
+  auto min_size = std ::min(data_size(), rhs.data_size());
+  // from msb to lsb
+  if (rhs.data_size() > min_size) {
+    for (size_t i = rhs.data_size(); i > min_size; i--) {
+      if (rhs.data[i - 1] != 0)
+        return true;
+    }
+  } else if (data_size() > min_size) {
+    for (size_t i = data_size(); i > min_size; i--) {
+      if (data[i - 1] != 0)
+        return false;
+    }
+  } else {
+    for (size_t i = min_size; i > 0; i--) {
+      if (data[i - 1] != rhs.data[i - 1]) {
+        return data[i - 1] < rhs.data[i - 1];
+      }
+    }
+  }
+  return false;
+}
+bool BitVec ::operator>=(const BitVec &rhs) const {
+  auto min_size = std ::min(data_size(), rhs.data_size());
+  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) >= 0;
+}
+bool BitVec ::operator<=(const BitVec &rhs) const {
+  auto min_size = std ::min(data_size(), rhs.data_size());
+  return memcmp(data.data(), rhs.data.data(), min_size * sizeof(unit_t)) <= 0;
+}
 #undef FOREACH_OP
 #undef COMP_IMPL
 
