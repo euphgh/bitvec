@@ -15,7 +15,7 @@ BitVec::BitVec(word_t value, width_t width) {
 }
 
 bool BitVec::operator[](width_t pos) const {
-  return (data[pos / sizeof(unit_t)] >> pos % sizeof(unit_t)) & 0x1;
+  return (data[pos / ubits] >> pos % ubits) & 0x1;
 }
 
 #define BITVEC_COMPARE_TEMPLATE(ret)                                           \
