@@ -13,7 +13,11 @@ class BitVec {
   stdvec data = stdvec();
   width_t len = 0;
   // remove redundent element
-  void data_resize() { data.resize((width() - 1) / (sizeof(unit_t))); }
+  void data_resize() {
+    const auto new_size = ((width() - 1) / ubits) + 1;
+    BV_INFO("call data_resize {}", new_size);
+    data.resize(new_size);
+  }
   BitVec(width_t width, stdvec mem) : data(std::move(mem)), len(width) {}
   [[nodiscard]] inline width_t data_size() const { return data.size(); }
   [[nodiscard]] std::string data_check() const {
@@ -39,7 +43,10 @@ public:
   [[nodiscard]] BitVec operator<<(width_t pos) const;
   [[nodiscard]] BitVec operator>>(width_t pos) const;
   [[nodiscard]] BitVec slice(width_t msb, width_t lsb) const;
-  [[nodiscard]] inline width_t width() const { return len; }
+  [[nodiscard]] inline width_t width() const {
+    require(len > 0, "len == 0");
+    return len;
+  }
   // change
   void sign_extend(width_t start);
   void zero_extend(width_t start);
