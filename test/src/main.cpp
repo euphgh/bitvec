@@ -48,13 +48,29 @@ public:
     dut0 = bv::BitVec(rand0);
     dut1 = bv::BitVec(rand1);
   }
+
+  void set_value(size_t lhs, size_t rhs) {
+    rand0 = lhs;
+    rand1 = rhs;
+
+    ref0 = std::bitset<64>(rand0);
+    ref1 = std::bitset<64>(rand1);
+
+    dut0 = bv::BitVec(rand0);
+    dut1 = bv::BitVec(rand1);
+  }
 };
 
 TEST_F(BitVecOp, helloTest) {
-  for (size_t i = 0; i < 100; i++) {
+  set_value(0b101110111, 0b101110110);
+  EXPECT_EQ(rand0 < rand1, dut0 < dut1);
+  set_value(0b111110111, 0b011110111);
+  EXPECT_EQ(rand0 < rand1, dut0 < dut1);
+  for (size_t i = 0; i < 10000; i++) {
     rand_init();
-    EXPECT_EQ(ref0 < ref1, dut0 < dut1) << fmt::format(
-        "test[{}] fail: {} {} {}", i, rand0, (ref0 < ref1 ? "<" : ">="), rand1);
+    EXPECT_EQ(rand0 < rand1, dut0 < dut1)
+        << fmt::format("test[{}] fail: {:b}({:o}) {} {:b}({:o})", i, rand0,
+                       rand0, (rand0 < rand1 ? "<" : ">="), rand1, rand1);
   }
 }
 
