@@ -79,4 +79,11 @@ void BitVec::get(void *value, width_t bits) const {
   }
 }
 
-size_t BitVec::get() const { return *(size_t *)(data.data()); }
+size_t BitVec::get() const {
+  size_t res = 0;
+  const auto max_size = std::min(data_size(), sizeof(size_t));
+  for (size_t i = max_size; i > 0; i--) {
+    res = (res << ubits) | data[i - 1];
+  }
+  return res;
+}

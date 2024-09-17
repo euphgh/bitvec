@@ -124,28 +124,28 @@ TEST(BitVecUtils, hex_char) {
 }
 
 TEST(BitVecTest, right_shift) {
-  std::bitset<64> ref;
+  std::bitset<32> ref;
   bv::BitVec dut;
   for (size_t i = 0; i < 1000; i++) {
     auto value = rand();
-    auto shift = rand() % 32;
-    ref = std::bitset<64>(value);
-    dut = bv::BitVec(value, 64);
-    EXPECT_EQ((ref >> shift).to_ullong(), (dut >> shift).get())
-        << fmt::format("test{} = {:x} >> {}", i, value, shift);
+    auto shift = rand() % 36;
+    ref = std::bitset<32>(value) >> shift;
+    dut = bv::BitVec(value, 32) >> shift;
+    EXPECT_EQ(ref.to_ullong(), dut.get()) << fmt::format(
+        "test{}: {:x} >> {} = {}", i, value, shift, dut.to_string());
   }
 }
 
 TEST(BitVecTest, left_shift) {
-  std::bitset<64> ref;
+  std::bitset<32> ref;
   bv::BitVec dut;
   for (size_t i = 0; i < 1000; i++) {
     auto value = rand();
-    auto shift = rand() % 32;
-    ref = std::bitset<64>(value);
-    dut = bv::BitVec(value, 64);
-    EXPECT_EQ((ref << shift).to_ullong(), (dut << shift).get())
-        << fmt::format("test{} = {:x} << {}", i, value, shift);
+    auto shift = rand() % 36;
+    ref = std::bitset<32>(value) << shift;
+    dut = bv::BitVec(value, 32) << shift;
+    EXPECT_EQ(ref.to_ullong(), dut.get()) << fmt::format(
+        "test{}: {:x} << {} = {}", i, value, shift, dut.to_string());
   }
 }
 
