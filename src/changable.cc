@@ -79,4 +79,4 @@ void BitVec::get(void *value, width_t bits) const {
   }
 }
 
-uint64_t BitVec::get() const { return *(uint64_t *)(data.data()); }
+size_t BitVec::get() const { return *(size_t *)(data.data()); }
