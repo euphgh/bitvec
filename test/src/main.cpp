@@ -95,8 +95,6 @@ TEST(BitVecTest, atTest) {
   }
 }
 
-// TEST(BitVecTest, changable) {}
-
 TEST(BitVecUtils, min_len) {
   EXPECT_EQ(bv::min_len(1), 1);
   EXPECT_EQ(bv::min_len(0), 1);
@@ -123,6 +121,32 @@ TEST(BitVecUtils, hex_char) {
   EXPECT_EQ(bv::hex_char(0xd), 'd');
   EXPECT_EQ(bv::hex_char(0xe), 'e');
   EXPECT_EQ(bv::hex_char(0xf), 'f');
+}
+
+TEST(BitVecTest, right_shift) {
+  std::bitset<64> ref;
+  bv::BitVec dut;
+  for (size_t i = 0; i < 1000; i++) {
+    auto value = rand();
+    auto shift = rand() % 32;
+    ref = std::bitset<64>(value);
+    dut = bv::BitVec(value, 64);
+    EXPECT_EQ((ref >> shift).to_ullong(), (dut >> shift).get())
+        << fmt::format("test{} = {:x} >> {}", i, value, shift);
+  }
+}
+
+TEST(BitVecTest, left_shift) {
+  std::bitset<64> ref;
+  bv::BitVec dut;
+  for (size_t i = 0; i < 1000; i++) {
+    auto value = rand();
+    auto shift = rand() % 32;
+    ref = std::bitset<64>(value);
+    dut = bv::BitVec(value, 64);
+    EXPECT_EQ((ref << shift).to_ullong(), (dut << shift).get())
+        << fmt::format("test{} = {:x} << {}", i, value, shift);
+  }
 }
 
 int main(int argc, char **argv) {

@@ -62,45 +62,52 @@ bool BitVec::operator>=(const BitVec &rhs) const { return !(*this < rhs); }
 bool BitVec::operator<=(const BitVec &rhs) const { return !(*this > rhs); }
 bool BitVec::operator==(const BitVec &rhs) const { return !(*this != rhs); }
 
-#define RIGHT_SHIFT(name, op, pos)                                             \
-  auto name = stdvec(data_size());                                             \
+#define RIGHT_SHIFT(pos)                                                       \
+  auto mem = stdvec(data_size());                                              \
   do {                                                                         \
-    if (pos % ubits) {                                                         \
-      for (size_t i = 0; i < data_size(); i++)                                 \
-        name[i] = data[i] op(pos % ubits);                                     \
+    const auto nblk = (pos) / ubits;                                           \
+    if (nblk < data_size()) {                                                  \
+      memcpy(mem.data(), data.data() + nblk,                                   \
+             (data_size() - nblk) * sizeof(unit_t));                           \
     }                                                                          \
-    size_t offset = pos / ubits;                                               \
+    const auto offset = (pos) % ubits;                                         \
     if (offset) {                                                              \
-      memcpy(name.data(), data.data() + offset,                                \
-             (data_size() - offset) * sizeof(unit_t));                         \
+      for (size_t i = 0; i < data_size() - 1; i++)                             \
+        mem[i] = (mem[i] >> offset) | (mem[i + 1] << (ubits - offset));        \
+      mem[data_size() - 1] = (mem[data_size() - 1] >> offset);                 \
     }                                                                          \
-  } while (0);
+  } while (0)
 
 [[nodiscard]] BitVec BitVec::operator>>(width_t pos) const {
-  RIGHT_SHIFT(mem, >>, pos);
+  BV_INFO("call >> {} for bitvec {}", pos, to_string());
+  RIGHT_SHIFT(pos);
   return {width(), mem};
 }
 
 [[nodiscard]] BitVec BitVec::operator<<(width_t pos) const {
+  BV_INFO("call << {} for bitvec {}", pos, to_string());
   auto mem = stdvec(data_size());
-  // offset
-  if (pos % ubits) {
-    for (size_t i = 0; i < data_size(); i++)
-      mem[i] = data[i] << (pos % ubits);
-  }
   // block
-  size_t offset = pos / ubits;
+  const auto nblk = pos / ubits;
+  // set lsb 0
+  memset(mem.data(), 0, nblk * sizeof(unit_t));
+  // set msb value
+  memcpy(mem.data() + nblk, data.data(), (data_size() - nblk) * sizeof(unit_t));
+
+  // offset
+  const auto offset = pos % ubits;
   if (offset) {
-    // set lsb 0
-    memset(mem.data(), 0, offset * sizeof(unit_t));
-    // set msb value
-    memcpy(mem.data() + offset, data.data(),
-           (data_size() - offset) * sizeof(unit_t));
+    for (size_t i = data_size() - 1; i > 0; i--) {
+      BV_INFO("mem[{}] = (mem[{}]({:02x}) << {}) | (mem[{}]({:02x}) >> {})", i,
+              i, mem[i], offset, i - 1, mem[i - 1], (ubits - offset));
+      mem[i] = (mem[i] << offset) | (mem[i - 1] >> (ubits - offset));
+    }
+    mem[0] = mem[0] << offset;
   }
   return {width(), mem};
 }
 
 [[nodiscard]] BitVec BitVec::slice(width_t msb, width_t lsb) const {
-  RIGHT_SHIFT(mem, >>, lsb);
+  RIGHT_SHIFT(lsb);
   return {msb - lsb + 1, mem};
 }
