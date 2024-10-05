@@ -23,13 +23,13 @@ namespace bv {
 
 #define BV_LOG(cond, fmt_str, ...)                                             \
   do {                                                                         \
-    if (BV_LOG_LEVEL >= cond)                                                  \
+    if (cond >= BV_LOG_LEVEL)                                                  \
       fmt::println(fmt_str, ##__VA_ARGS__);                                    \
   } while (0)
 
-#define BV_INFO(fmt_str, ...) BV_LOG(BV_LOG_INFO, fmt_str, __VA_ARGS__)
-#define BV_WARN(fmt_str, ...) BV_LOG(BV_LOG_WARN, fmt_str, __VA_ARGS__)
-#define BV_ERROR(fmt_str, ...) BV_LOG(BV_LOG_ERROR, fmt_str, __VA_ARGS__)
+#define BV_INFO(fmt_str, ...) BV_LOG(BV_LOG_INFO, fmt_str, ##__VA_ARGS__)
+#define BV_WARN(fmt_str, ...) BV_LOG(BV_LOG_WARN, fmt_str, ##__VA_ARGS__)
+#define BV_ERROR(fmt_str, ...) BV_LOG(BV_LOG_ERROR, fmt_str, ##__VA_ARGS__)
 
 };     // namespace bv
 #endif // __BITVEC_DEBUG_H__
