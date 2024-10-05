@@ -105,8 +105,17 @@ inline size_t rand_unit() {
   return engin(rd);
 }
 
-inline size_t one_bit_mask(width_t pos) { return 1L << pos; }
-inline size_t low_bit_mask(width_t pos) { return (1L << pos) - 1; }
+/** Gnerate single bit mask
+ * @param pos which pos should be set 1
+ * @return one bit set mask
+ */
+inline size_t one_bit_mask(width_t pos) { return (1ULL << pos); }
+
+/** Generate low bit mask
+ * @param num from 0, how many 1 in result
+ * @return mask with num 1
+ */
+inline size_t low_bit_mask(width_t num) { return (1ULL << num) - 1; }
 
 }; // namespace bv
 
