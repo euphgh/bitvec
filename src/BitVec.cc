@@ -14,6 +14,8 @@ BitVec::BitVec(word_t value, width_t width) {
   data_resize();
 }
 
+BitRef BitVec::operator[](width_t pos) { return BitRef{*this, pos}; }
+
 bool BitVec::operator[](width_t pos) const {
   return (data[pos / ubits] >> pos % ubits) & 0x1;
 }
@@ -115,3 +117,34 @@ bool BitVec::operator==(const BitVec &rhs) const { return !(*this != rhs); }
   RIGHT_SHIFT(lsb);
   return {msb - lsb + 1, mem};
 }
+
+#define IMPL_LOGIC_OP(op)                                                      \
+  [[nodiscard]] BitVec BitVec::operator op(const BitVec & rhs) const {         \
+    auto max_size = data_size();                                               \
+    auto min_size = rhs.data_size();                                           \
+    if (data_size() < rhs.data_size()) {                                       \
+      max_size = rhs.data_size();                                              \
+      min_size = data_size();                                                  \
+    }                                                                          \
+    auto res_mem = stdvec(max_size);                                           \
+    for (size_t i = 0; i < min_size; i++)                                      \
+      res_mem[i] = data[i] op rhs.data[i];                                     \
+    for (size_t i = min_size; i < max_size; i--) {                             \
+      auto l = 0;                                                              \
+      auto r = 0;                                                              \
+      if (i <= data_size()) {                                                  \
+        l = data[i];                                                           \
+      }                                                                        \
+      if (i <= rhs.data_size()) {                                              \
+        r = rhs.data[i];                                                       \
+      }                                                                        \
+      res_mem[i] = l op r;                                                     \
+    }                                                                          \
+    return {std::max(width(), rhs.width()), res_mem};                          \
+  }
+
+IMPL_LOGIC_OP(&)
+IMPL_LOGIC_OP(|)
+IMPL_LOGIC_OP(^)
+
+#undef IMPL_LOGIC_OP

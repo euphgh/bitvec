@@ -1,7 +1,6 @@
 #ifndef __BITVEC_DEBUG_H__
 #define __BITVEC_DEBUG_H__
 
-#define BV_LOG_LEVEL 0
 #define BV_LOG_INFO 1
 #define BV_LOG_WARN 2
 #define BV_LOG_ERROR 3

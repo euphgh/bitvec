@@ -3,6 +3,7 @@
 
 #include "bitvec/debug.h"
 #include "bitvec/type.h"
+#include <random>
 #include <sstream>
 #include <stack>
 
@@ -96,6 +97,16 @@ inline size_t min_len(word_t x) {
   }
   return res == 0 ? 1 : res;
 }
+
+inline size_t rand_unit() {
+  // static std::random_device rd;
+  static std::default_random_engine rd;
+  static std::uniform_int_distribution<size_t> engin(0, ~(unit_t(0)));
+  return engin(rd);
+}
+
+inline size_t one_bit_mask(width_t pos) { return 1L << pos; }
+inline size_t low_bit_mask(width_t pos) { return (1L << pos) - 1; }
 
 }; // namespace bv
 
