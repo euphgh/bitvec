@@ -1,8 +1,13 @@
+#include "../include/utils.h"
 #include "bitvec/core.h"
-#include "bitvec/utils.h"
 #include <bitset>
 #include <fmt/core.h>
 #include <gtest/gtest.h>
+
+int main(int argc, char **argv) {
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
 
 TEST(BitVecTest, create) {
   auto foo = bv::BitVec(12, 32);
@@ -16,15 +21,6 @@ TEST(BitVecTest, create) {
   auto baz = bv::BitVec(0b101);
   EXPECT_EQ(baz.width(), 3);
   EXPECT_EQ(baz.to_string(), "(x101)5");
-}
-
-template <std::size_t N>
-bool operator<(const std::bitset<N> &x, const std::bitset<N> &y) {
-  for (int i = N - 1; i >= 0; i--) {
-    if (x[i] ^ y[i])
-      return y[i];
-  }
-  return false;
 }
 
 class BitVecOp : public testing::Test {
@@ -95,34 +91,6 @@ TEST(BitVecTest, atTest) {
   }
 }
 
-TEST(BitVecUtils, min_len) {
-  EXPECT_EQ(bv::min_len(1), 1);
-  EXPECT_EQ(bv::min_len(0), 1);
-  EXPECT_EQ(bv::min_len(0b1000), 4);
-  EXPECT_EQ(bv::min_len(0b1100), 4);
-  EXPECT_EQ(bv::min_len(0b1010), 4);
-  EXPECT_EQ(bv::min_len(0b1011), 4);
-}
-
-TEST(BitVecUtils, bin_char) {
-  EXPECT_EQ(bin_char(0), '0');
-  EXPECT_EQ(bin_char(1), '1');
-  EXPECT_EQ(bin_char(2), '0');
-}
-
-TEST(BitVecUtils, hex_char) {
-  EXPECT_EQ(bv::hex_char(0), '0');
-  EXPECT_EQ(bv::hex_char(1), '1');
-  EXPECT_EQ(bv::hex_char(2), '2');
-  EXPECT_EQ(bv::hex_char(9), '9');
-  EXPECT_EQ(bv::hex_char(0xa), 'a');
-  EXPECT_EQ(bv::hex_char(0xb), 'b');
-  EXPECT_EQ(bv::hex_char(0xc), 'c');
-  EXPECT_EQ(bv::hex_char(0xd), 'd');
-  EXPECT_EQ(bv::hex_char(0xe), 'e');
-  EXPECT_EQ(bv::hex_char(0xf), 'f');
-}
-
 TEST(BitVecTest, right_shift) {
   std::bitset<32> ref;
   bv::BitVec dut;
@@ -149,7 +117,9 @@ TEST(BitVecTest, left_shift) {
   }
 }
 
-int main(int argc, char **argv) {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+TEST(BitVecTest, and) {
+  const auto l = uniform_rand();
+  const auto r = uniform_rand();
+  const auto lbv = bv::BitVec(l);
+  const auto rbv = bv::BitVec(l);
 }

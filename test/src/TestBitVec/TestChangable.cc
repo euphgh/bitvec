@@ -1,7 +1,5 @@
 #include "bitvec/core.h"
 #include "bitvec/type.h"
-#include <bitset>
-#include <cstddef>
 #include <cstdlib>
 #include <fmt/core.h>
 #include <gtest/gtest.h>

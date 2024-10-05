@@ -29,16 +29,18 @@ if(NOT GTEST_FOUND)
 endif()
 
 # Now simply link against gtest as needed. Eg
-add_executable(bitvec_test 
-  src/main.cc
+add_executable(TestBitVec 
+  src/TestBitVec/TestOperator.cc
+  src/TestBitVec/TestUtils.cc
+  src/TestBitVec/TestChangable.cc
   src/utils.cc
 )
 add_executable(TestBitRef 
   src/TestBitRef.cc
   src/utils.cc
 )
-target_link_libraries(bitvec_test gtest_main bitvec gtest)
+target_link_libraries(TestBitVec gtest_main bitvec gtest)
 target_link_libraries(TestBitRef gtest_main bitvec gtest)
 
-add_test(NAME bitvec_test COMMAND bitvec_test)
+add_test(NAME bitvec_test COMMAND TestBitVec)
 add_test(NAME bitref_test COMMAND TestBitRef)
