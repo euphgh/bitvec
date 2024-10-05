@@ -5,6 +5,9 @@
 #define BV_LOG_INFO 1
 #define BV_LOG_WARN 2
 #define BV_LOG_ERROR 3
+#define BV_LOG_SILENCE 255
+
+#define BV_LOG_LEVEL BV_LOG_SILENCE
 
 namespace bv {
 
